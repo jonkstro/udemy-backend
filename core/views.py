@@ -7,7 +7,6 @@ from .models import List, Item
 
 
 class ListViewSet(viewsets.ModelViewSet):
-    queryset = List.objects.all()
     serializer_class = ListSerializer
     # CONFIGURAR PARA SÓ EXIBIR SE ESTIVER AUTENTICADO COM TOKEN
     permission_classes = [permissions.IsAuthenticated]
@@ -15,7 +14,10 @@ class ListViewSet(viewsets.ModelViewSet):
             authentication.TokenAuthentication, 
             authentication.SessionAuthentication
         ]
-
+    # SERÁ MOSTRADO SOMENTE AS LISTAS DO USUÁRIO QUE TIVER LOGADO
+    def get_queryset(self):
+        user = self.request.user
+        return List.objects.filter(owner=user)
     
 class ItemViewSet(viewsets.ModelViewSet):
     queryset = Item.objects.all()
